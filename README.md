@@ -82,7 +82,8 @@ cp "video.sources/season 1 episode 3.flv" stream.queue/.
 # ...
 ```
 
-   - each successfully queued file will show up in the streaming console and be broadcasted to the stream.
+   - each successfully queued file will show up in the streaming console with its slot number, start time, title and duration.
+   - once the file has been transcoded into the outgoing stream, the slot it occupies is reset and becomes available again. 
 
 ## 5 - Once done, stop the stream
 

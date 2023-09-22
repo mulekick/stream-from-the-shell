@@ -9,7 +9,7 @@ registry="$(cat docker.registry)"
 # docker image tag
 dockerimg="$registry/$appname:latest"
 # container name
-contname="stream-generator"
+contname="twitch-generator"
 # stream queue bind mount
 hostqueuedir=$(realpath stream.queue)
 contqueuedir='/src/stream.queue'
