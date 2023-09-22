@@ -1,0 +1,23 @@
+{
+    "name": "twitch.generator",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Generate an RTMP stream from VODs on the fly for ingestion by a twitch endpoint",
+    "type": "module",
+    "scripts": {
+        "prepare": "./utils/prepare.sources.sh",
+        "restream": "./utils/restream.playlist.sh",
+        "bundle": "./generator.sh bundle",
+        "start": "./generator.sh start",
+        "stop": "./generator.sh stop",
+        "console": "./generator.sh console"
+    },
+    "os": [
+        "linux"
+    ],
+    "author": "mulekick <moolekick@gmail.com> (https://github.com/mulekick)",
+    "license": "MIT",
+    "repository": {},
+    "bugs": {},
+    "homepage": "https://github.com/mulekick/twitch.generator"
+}

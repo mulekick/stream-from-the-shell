@@ -1,0 +1,19 @@
+# The following files/folders will not be copied to the container
+node_modules
+Dockerfile
+
+# config files
+.eslint*
+.dockerignore
+.gitignore
+
+# debug files
+.vscode
+
+# irrelevant files
+*.old
+
+# project specific
+.git
+_commands.sh
+ffmpeg-*.log

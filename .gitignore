@@ -1,0 +1,9 @@
+# exclude project specifics
+video.sources
+stream.queue/*.ts
+
+# exclude passphrase and endpoint
+.ingest.endpoint
+.ingest.passphrase
+.twitch.endpoint
+.twitch.streamkey

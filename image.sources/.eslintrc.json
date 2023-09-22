@@ -1,0 +1,3 @@
+{
+    "extends": [ "@mulekick/eslint-config-muleslint" ]
+}

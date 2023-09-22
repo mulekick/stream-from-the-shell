@@ -1,0 +1,32 @@
+{
+    "name": "twitch.generator",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Generate an RTMP stream from VODs on the fly for ingestion by a twitch endpoint",
+    "type": "module",
+    "scripts": {
+        "dev": "./_commands.sh dev",
+        "build": "./_commands.sh build"
+    },
+    "dependencies": {
+        "ascii-table": "^0.0.9",
+        "chalk": "^5.2.0",
+        "chokidar": "^3.5.3",
+        "log-update": "^5.0.1"
+    },
+    "devDependencies": {
+        "@mulekick/eslint-config-muleslint": "^1.0.2"
+    },
+    "engines": {
+        "node": ">=16.16.0",
+        "npm": ">=8.15.1"
+    },
+    "os": [
+        "linux"
+    ],
+    "author": "mulekick <moolekick@gmail.com> (https://github.com/mulekick)",
+    "license": "MIT",
+    "repository": {},
+    "bugs": {},
+    "homepage": "https://github.com/mulekick/twitch.generator"
+}
