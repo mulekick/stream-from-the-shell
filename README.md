@@ -1,3 +1,9 @@
+![GitHub package.json version](https://img.shields.io/github/package-json/v/mulekick/twitch.generator)
+![GitHub License](https://img.shields.io/github/license/mulekick/twitch.generator)
+![Last Commit](https://img.shields.io/github/last-commit/mulekick/twitch.generator)
+![Docker Image Size](https://img.shields.io/docker/image-size/mulekick/twitch.generator)
+![Docker Pulls](https://img.shields.io/docker/pulls/mulekick/twitch.generator)
+
 ## Prerequisites
 
    - Linux distro or WLS2 (debian 11 recommended)
