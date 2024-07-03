@@ -36,8 +36,6 @@ grep -v '^ *#' < "$inputs/$sources" | while IFS= read -r line; do
     # map filtered streams to output
     # set video encoder time base (1 / frame rate)
     # set audio encoder time base (1 / sample rate)
-    # set identical GOP size and keyframe interval (compatible with stream copy to an HLS playlist with 2 seconds segments - VITAL)
-    # normalize codecs (h264 + AAC) + set audio and video bitrate
 
     # ==== OUTPUT ====
     # use fast encoding preset
