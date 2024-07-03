@@ -22,7 +22,6 @@ grep -v '^ *#' < "$inputs/$sources" | while IFS= read -r line; do
     # ==== GENERAL ====
     # overwrite outputs
     # exit on error, hide banner, log level, disable interactive mode
-    # duplicate / drop frames in all output video streams to achieve the desired frame rate 
 
     # ==== INPUT ====
     # error detection level + fail when input contains errors
@@ -37,45 +36,49 @@ grep -v '^ *#' < "$inputs/$sources" | while IFS= read -r line; do
     # map filtered streams to output
     # set video encoder time base (1 / frame rate)
     # set audio encoder time base (1 / sample rate)
+    # set identical GOP size and keyframe interval (compatible with stream copy to an HLS playlist with 2 seconds segments - VITAL)
     # normalize codecs (h264 + AAC) + set audio and video bitrate
 
     # ==== OUTPUT ====
+    # use fast encoding preset
+    # set pixel format
+    # set maximum GOP size (number of frames between keyframes) required for twitch.tv source stability
+    # set minimum GOP size (120 / 30 = 1 keyframe every 4 seconds)
     # set video output framerate (output option - duplicate or drop frames right before encoding - VITAL)
     # set audio channels (required by the flv muxer for it does not default to the number of audio channels in the input ...)
-    # set pixel format
-    # set maximum GOP size (number of frames between keyframes) required for twitch source stability
-    # set minimum GOP size (80 / 20 = 1 keyframe every 4 seconds)
+    # set codec and bitrate for audio and video streams
+    # duplicate / drop frames in all output video streams to achieve the desired frame rate
     # encode up to shortest stream (NOT WORKING)
     # max buffering duration for stream interleaving (in microseconds)
     # strictly follow the standards (output)
     # use flv muxer - required for rtmp streaming
     # output to file ...
-
     ffmpeg -y \
         -xerror \
         -hide_banner \
         -loglevel info \
         -nostdin \
-        -vsync cfr \
         -err_detect +explode+aggressive \
         -fflags +discardcorrupt+genpts+igndts \
         -strict +very+strict \
         -i "$path/$file.$ext" \
         -filter_complex \
         '[0:a:0] loudnorm, aresample=44100 [audio];
-         [0:v:0] scale=640:480 [scaled]' \
+         [0:v:0] scale=854:480:force_original_aspect_ratio=decrease,pad=854:480:(ow-iw)/2:(oh-ih)/2,setdar=dar=16/9,setsar=sar=1 [scaled]' \
         -map '[scaled]' -map '[audio]' \
-        -enc_time_base:v:0 1:20 \
+        -enc_time_base:v:0 1:30 \
         -enc_time_base:a:0 1:44100 \
-        -c:a:0 aac \
-        -b:a:0 128k \
-        -c:v:0 libx264 \
-        -b:v:0 750k \
-        -r:v:0 20 \
+        -preset:v:0 fast \
         -pix_fmt:v:0 yuv420p \
-        -g 80 \
-        -keyint_min 80 \
-        -ac 2 \
+        -g:v:0 120 \
+        -keyint_min:v:0 120 \
+        -r:v:0 30 \
+        -ac:a:0 2 \
+        -c:a:0 aac \
+        -b:a:0 320k \
+        -c:v:0 libx264 \
+        -b:v:0 2000k \
+        -fps_mode:v:0 cfr \
         -fflags +shortest \
         -max_interleave_delta 2500000 \
         -strict +very+strict \

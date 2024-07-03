@@ -1,0 +1,3 @@
+# list of media sources (all containers formats, resolutions, framerates etc ... are permitted)
+# it is best to always use absolute paths and enclose in single quotes as in the following example :
+# '/home/myusername/video files/series/breaking bad season 1/episode 1.mp4'

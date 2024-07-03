@@ -1,3 +1,12 @@
 {
-    "extends": [ "@mulekick/eslint-config-muleslint" ]
+    "extends": [
+        "plugin:@typescript-eslint/recommended",
+        "@mulekick/eslint-config-muleslint"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "plugins": [ "@typescript-eslint" ],
+    "rules": {
+        // disable warnings for unpublished modules ...
+        "node/no-unpublished-import": [ "off" ]
+    }
 }

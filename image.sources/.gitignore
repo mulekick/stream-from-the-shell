@@ -1,10 +1,10 @@
 # exclude node modules
 node_modules
-# exclude package-lock.json
-package-lock.json
+# exclude build
+dist/*
+# push directories
+!**/.gitkeep
 # exclude project specifics
 default.slot.*
 stream.slots/*.flv
 ffmpeg-*.log
-# exclude irrelevant files
-*.old

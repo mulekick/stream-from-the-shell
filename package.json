@@ -1,16 +1,16 @@
 {
-    "name": "twitch.generator",
-    "version": "1.0.0",
+    "name": "stream-from-the-shell",
+    "version": "2.0.0",
     "private": true,
-    "description": "Generate an RTMP stream from VODs on the fly for ingestion by a twitch endpoint",
+    "description": "Generate an RTMP stream from video files for ingestion by a twitch.tv endpoint",
     "type": "module",
     "scripts": {
         "prepare": "./utils/prepare.sources.sh",
-        "restream": "./utils/restream.playlist.sh",
-        "bundle": "./generator.sh bundle",
-        "start": "./generator.sh start",
-        "stop": "./generator.sh stop",
-        "console": "./generator.sh console"
+        "stream": "./commands.sh stream",
+        "restream": "./commands.sh restream",
+        "stop": "./commands.sh stop",
+        "console": "./commands.sh console",
+        "bundle": "./commands.sh bundle"
     },
     "os": [
         "linux"
@@ -19,5 +19,5 @@
     "license": "MIT",
     "repository": {},
     "bugs": {},
-    "homepage": "https://github.com/mulekick/twitch.generator"
+    "homepage": "https://github.com/mulekick/stream-from-the-shell"
 }

@@ -2,4 +2,8 @@
 node_modules
 
 # exclude build
-build
+dist
+
+# projects specifics
+stream.slots
+default.slot.*

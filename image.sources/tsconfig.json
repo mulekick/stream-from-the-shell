@@ -1,0 +1,15 @@
+{
+    "include": [ "./src/**/*.ts", "./types/*.d.ts" ],
+    "compilerOptions": {
+        "allowImportingTsExtensions": true,
+        "target": "es2022",
+        "jsx": "preserve",
+        "module": "nodenext",
+        "rootDir": "./src",
+        "moduleResolution": "nodenext",
+        "noEmit": true,
+        "isolatedModules": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true
+    }
+}

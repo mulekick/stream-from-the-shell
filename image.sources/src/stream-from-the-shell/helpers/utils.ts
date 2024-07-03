@@ -1,9 +1,13 @@
 // reduceRight ARRAY INDEXS ARE REVERSED - START FROM array.length - 1
 
+// import interfaces
+import {StreamingSlot} from "../../interfaces.ts";
+
 const
+
     // passing slots as reference and mutating it on purpose ...
     // TODO upgrade this mess to a clean cut ES6 class later
-    computeTimestamps = slots => slots
+    computeTimestamps = (slots:Array<StreamingSlot>):number => slots
         .slice()
         .reduce((r, x, i) => {
             // add starting timestamp to slot
@@ -11,8 +15,9 @@ const
             // return duration up to this point
             return r + x.duration;
         }, 0),
+
     // extract ffmpeg timer
-    decodeTimer = stderr => stderr
+    decodeTimer = (stderr:string):number => stderr
         .split(`:`)
         .reduceRight((r, x, i) => {
             let
@@ -26,7 +31,7 @@ const
                 // update accumulator
                 up += s * 1e3 + ms * 1e1;
             } else {
-                // update accumulator (indexes are resversed still)
+                // update accumulator (indexes are reversed still)
                 up += Number(x) * (60 ** (2 - i)) * 1e3;
             }
 

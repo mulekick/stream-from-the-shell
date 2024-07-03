@@ -9,7 +9,19 @@
             "request": "launch",
             "name": "debug stream",
             "skipFiles": [ "<node_internals>/**" ],
-            "program": "${workspaceFolder}/stream.generator/stream.js",
+            // log output in current terminal instead of debug console
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            // environment variables (replace by your own twitch.tv endpoint and stream key)
+            "env": {
+                "NODE_ENV": "development",
+                "TWITCH_ENDPOINT": "my-twitch-endpoint"
+            },
+            // run using tsx
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/tsx",
+            // not using nodemon in debug mode
+            "program": "${workspaceFolder}/src/stream-from-the-shell/main.ts",
+            "args": [ "--stream" ],
             "cwd": "${workspaceFolder}"
         }
     ]

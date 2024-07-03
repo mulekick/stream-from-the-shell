@@ -1,7 +1,9 @@
 # exclude project specifics
-video.sources
-stream.queue/*.flv
+video.sources/*
+!video.sources/.video.sources.list
+stream.queue/*
+!stream.queue/.gitkeep
 
-# exclude passphrase and endpoint
+# exclude container name and twitch endpoint
+.container.name
 .twitch.endpoint
-.twitch.streamkey

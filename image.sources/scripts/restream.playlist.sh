@@ -2,16 +2,13 @@
 
 # origin stream master playlist url
 streamlocation="$1"
-# twitch ingestion endpoint
+# twitch.tv ingestion endpoint
 endpoint="$(cat .twitch.endpoint)"
-# twitch stream key
-streamkey="$(cat .twitch.streamkey)"
 
 # ==== GENERAL ====
 # overwrite outputs
-# exit on error, hide banner, disable interactive mode
+# hide banner, disable interactive mode
 # read source in real time (for streaming)
-# directly pass timestamps from the demuxer to the muxer for all output video streams
 
 # ==== CODECS ====
 # codecs : copy stream data without reencoding
@@ -21,23 +18,24 @@ streamkey="$(cat .twitch.streamkey)"
 
 if [[ -z "$streamlocation" ]]; then
   # failure
-  echo "please provide a stream source to forward to the SRT server"
+  echo "please provide a stream source to forward"
   exit 1
 fi
 
 ffmpeg -y \
-  -xerror \
   -hide_banner \
   -nostdin \
   -re \
-  -vsync passthrough \
+  -err_detect +ignore_err+careful \
+  -fflags +discardcorrupt \
+  -strict +very+strict \
   -i "$streamlocation" \
   -map 0:a:0 \
   -map 0:v:0 \
   -c:a:0 copy \
   -c:v:0 copy \
   -f flv \
-  "rtmp://$endpoint/app/$streamkey"
+  "$endpoint"
 
 # success
 exit 0
