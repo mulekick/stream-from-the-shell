@@ -103,7 +103,7 @@ npm run restream "https://video.website/live-stream-master-playlist.m3u8"
 ./commands.sh restream "https://video.website/live-stream-master-playlist.m3u8"
 ```
 
-## 5 - Once done, stop the stream
+## 6 - Once done, stop the stream
 
 - The stream can be stopped at any point by running ```npm run stop``` or ```./commands.sh stop```.
 - Twitch.tv may automatically terminate the stream after 48 hours (I'm unable to 100% confirm that).
