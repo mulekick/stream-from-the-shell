@@ -3,7 +3,7 @@
 # origin stream master playlist url
 streamlocation="$1"
 # twitch.tv ingestion endpoint
-endpoint="$(cat .twitch.endpoint)"
+endpoint="$2"
 
 # ==== GENERAL ====
 # overwrite outputs

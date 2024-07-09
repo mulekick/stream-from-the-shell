@@ -6,6 +6,8 @@
 
 # Stream on twitch.tv from the shell
 
+**_Important : make sure that whatever you're streaming is compliant with twitch.tv's [terms of service](https://www.twitch.tv/p/en/legal/terms-of-service/) and [community guidelines](https://safety.twitch.tv/s/article/Community-Guidelines?language=en_US)._**
+
 ## Prerequisites
 
 - Linux distro or WLS2 (debian 12 recommended)
@@ -88,6 +90,18 @@ cp "video.sources/beaking_bad_season_1_episode_3.flv" stream.queue/.
 ```
 
 - Once the video has been transcoded into the outgoing stream, its slot is reset and becomes available again. 
+
+## 5 - Restream an ongoing stream
+
+- You can also use the program to restream an ongoing live stream by typing the following command :
+
+```bash
+# pass the url to the master playlist of the live stream you want to restream
+npm run restream "https://video.website/live-stream-master-playlist.m3u8"
+
+# if you don't have npm installed
+./commands.sh restream "https://video.website/live-stream-master-playlist.m3u8"
+```
 
 ## 5 - Once done, stop the stream
 
