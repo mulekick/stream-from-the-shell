@@ -1,5 +1,3 @@
-/* eslint-disable no-restricted-syntax */
-
 // import primitives
 import {PromiseWithChild, execFile} from "node:child_process";
 import {promisify} from "node:util";
@@ -17,13 +15,13 @@ const
     {SOURCE_PROBE_COMMAND, SLOTS_DEFAULT, SLOTS_DIRECTORY, SLOTS_PREFIX, SLOTS_EXTENSION} = config,
 
     // probe command wrapped in a promise ...
-    probe = (file:string):PromiseWithChild<{ stdout: string; stderr: string; }> => promisify(execFile)(SOURCE_PROBE_COMMAND, [ file ], {encoding: `utf8`}),
+    probe = (file: string): PromiseWithChild<{stdout: string; stderr: string}> => promisify(execFile)(SOURCE_PROBE_COMMAND, [ file ], {encoding: `utf8`}),
 
     // all async functions return promises ...
-    probeSlots = async(type:ProbeType, defaultSlot:StreamingSlot | null, transcodedSource: string | null):Promise<Array<StreamingSlot>> => {
+    probeSlots = async(type: ProbeType, defaultSlot: StreamingSlot | null, transcodedSource: string | null): Promise<Array<StreamingSlot>> => {
 
         // promises array
-        const probes = [] as Array<PromiseWithChild<{ stdout: string; stderr: string; }>>;
+        const probes = [] as Array<PromiseWithChild<{stdout: string; stderr: string}>>;
 
         // probe default slot
         if (type === `default_slot`) {
@@ -42,6 +40,7 @@ const
             probes.push(probe(transcodedSource));
 
         // probe streaming slots
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         } else if (type === `streaming_slots`) {
 
             // throw if default slot probe is invalid (promise will reject in caller and process will exit)
@@ -52,6 +51,7 @@ const
             const files = await opendir(SLOTS_DIRECTORY);
 
             // loop on slots
+            // eslint-disable-next-line no-restricted-syntax
             for await (const file of files) {
                 // check file format
                 if (file.name.endsWith(SLOTS_EXTENSION))

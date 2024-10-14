@@ -9,15 +9,15 @@ import {once} from "node:events";
 import stream from "./stream.ts";
 import restream from "./restream.ts";
 
-(async() => {
+void (async() => {
 
     try {
 
         // read optional params ...
-        const params:Array<string> = process.argv.slice(2);
+        const params: Array<string> = process.argv.slice(2);
 
         // ...
-        let spawnedProcess:ChildProcess | null = null;
+        let spawnedProcess: ChildProcess | null = null;
 
         // no streaming mode specified
         if (params.length === 0) {
@@ -70,9 +70,9 @@ import restream from "./restream.ts";
         // log main process exit condition
         await once(process, `exit`);
 
-        console.log(`main process exited with code ${ process.exitCode }`);
+        console.log(`main process exited with code ${ String(process.exitCode) }`);
 
-    } catch (err:unknown) {
+    } catch (err: unknown) {
         // log to stderr
         console.error(err instanceof Error ? err.message : `unknown error`);
         // exit with error

@@ -7,7 +7,7 @@ const
 
     // passing slots as reference and mutating it on purpose ...
     // TODO upgrade this mess to a clean cut ES6 class later
-    computeTimestamps = (slots:Array<StreamingSlot>):number => slots
+    computeTimestamps = (slots: Array<StreamingSlot>): number => slots
         .slice()
         .reduce((r, x, i) => {
             // add starting timestamp to slot
@@ -17,7 +17,7 @@ const
         }, 0),
 
     // extract ffmpeg timer
-    decodeTimer = (stderr:string):number => stderr
+    decodeTimer = (stderr: string): number => stderr
         .split(`:`)
         .reduceRight((r, x, i) => {
             let

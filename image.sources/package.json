@@ -1,13 +1,13 @@
 {
     "name": "stream-from-the-shell",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "private": true,
     "description": "Generate an RTMP stream from video files for ingestion by a twitch.tv endpoint",
     "type": "module",
     "scripts": {
         "list": "npx tsc --listFilesOnly | sort",
         "typecheck": "npx tsc && echo 'type checking was successful'",
-        "lint": "npx eslint . --ext .tsx,.ts",
+        "lint": "npx eslint .",
         "dev": "NODE_ENV=development TWITCH_ENDPOINT=\"$(cat ../.twitch.endpoint)\" npx tsx --tsconfig ./tsconfig.json src/stream-from-the-shell/main.ts --stream",
         "build": "npx esbuild src/stream-from-the-shell/main.ts --bundle --platform=node --packages=external --format=esm --analyze --outfile=dist/main.js",
         "docker:build": "buildimg=\"$(cat ../docker.registry)/stream-from-the-shell:latest\" && docker build -t \"$buildimg\" ."
@@ -19,15 +19,21 @@
         "log-update": "^6.0.0"
     },
     "devDependencies": {
-        "@mulekick/eslint-config-muleslint": "^1.0.3",
+        "@mulekick/eslint-config-muleslint": "^2.0.6",
         "@types/chalk": "^2.2.0",
         "@types/chokidar": "^2.1.3",
         "@types/log-update": "^3.1.0",
-        "@types/node": "^20.14.9",
+        "@types/node": "^22.7.5",
+        "@types/react": "^18.3.11",
+        "@types/react-dom": "^18.3.1",
         "@typescript-eslint/eslint-plugin": "^7.15.0",
         "@typescript-eslint/parser": "^7.15.0",
+        "eslint": "^8.57.1",
+        "globals": "^13.24.0",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
         "tsx": "^4.16.0",
-        "typescript": "^5.5.3"
+        "typescript": "^5.6.3"
     },
     "engines": {
         "node": ">=20.10.0",

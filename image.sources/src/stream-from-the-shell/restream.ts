@@ -3,6 +3,7 @@
 // import primitives
 import process from "node:process";
 import console from "node:console";
+import {Buffer} from "node:buffer";
 import {ChildProcess, spawn} from "node:child_process";
 
 // import modules
@@ -14,21 +15,21 @@ const
     {RESTREAM_START_COMMAND, TWITCH_ENDPOINT} = config,
 
     // subprocess exit callback
-    onSpawnedProcessExit = (code:number | null, signal:NodeJS.Signals | null):void => {
+    onSpawnedProcessExit = (code: number | null, signal: NodeJS.Signals | null): void => {
         // log ffmpeg exit condition
-        console.log(code ? `ffmpeg exited with code ${ code }` : signal ? `ffmpeg exited after receiving ${ signal }` : `something went really wrong monkaS`);
+        console.log(code ? `ffmpeg exited with code ${ String(code) }` : signal ? `ffmpeg exited after receiving ${ signal }` : `something went really wrong monkaS`);
         // gracefully exit process at this stage ...
     },
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onSpawnedProcessMessage = (d:any):void => {
+    onSpawnedProcessMessage = (d: Buffer | string): void => {
         // decode
-        const msg:string = d.toString(`utf8`);
+        const msg: string = d.toString(`utf8`);
         // log to stdout
         console.log(msg);
     },
 
-    restream = (playlist:string):Promise<ChildProcess> => {
+    restream = (playlist: string): Promise<ChildProcess> => {
 
         try {
 
@@ -39,7 +40,7 @@ const
                 // ------- initialize first mile srt live stream -----
                 // ---------------------------------------------------
 
-                restreamer:ChildProcess = spawn(RESTREAM_START_COMMAND, [ playlist, TWITCH_ENDPOINT ], {
+                restreamer: ChildProcess = spawn(RESTREAM_START_COMMAND, [ playlist, TWITCH_ENDPOINT ], {
                     // default subprocess env
                     env: process.env,
                     // pipe stderr to spawned subprocess
@@ -49,7 +50,7 @@ const
                 });
 
             // typescript (stdout ignored)
-            if (restreamer === null || restreamer.stderr === null)
+            if (typeof restreamer === `undefined` || !restreamer.stderr)
                 throw new Error(`failed to spawn ffmpeg process.`);
 
                 // ---------------------------------------------------
@@ -66,9 +67,9 @@ const
             // return
             return Promise.resolve(restreamer);
 
-        } catch (err:unknown) {
+        } catch (err: unknown) {
             // pass rejected promise to calling function
-            return Promise.reject(err instanceof Error ? err.message : `unknown error`);
+            return Promise.reject(new Error(err instanceof Error ? err.message : `unknown error`));
         }
     };
 

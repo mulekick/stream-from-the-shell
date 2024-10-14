@@ -1,8 +1,9 @@
-/* eslint-disable no-undef, node/no-process-env */
+/* eslint-disable node/no-process-env */
 
 // import primitives
 import process from "node:process";
 import console from "node:console";
+import {Buffer} from "node:buffer";
 import {ChildProcess, spawn} from "node:child_process";
 import {copyFile, rm} from "node:fs/promises";
 
@@ -25,7 +26,7 @@ const
     {STREAM_START_COMMAND, QUEUE_DIRECTORY, SLOTS_PREFIX, SLOTS_EXTENSION, SLOTS_DEFAULT, SLOTS_LIST_NAME, SLOTS_LIST_LENGTH, SLOTS_DIRECTORY, SLOTS_RESET_TIMEOUT, QUEUE_FILE_STABILITY_THRESHOLD, TWITCH_ENDPOINT} = config,
 
     // chokidar file watcher options
-    FSWATCHER_OPTIONS:Record<string, unknown> = {
+    FSWATCHER_OPTIONS: Record<string, unknown> = {
         // keep the process running as long as the watcher is running
         persistent: true,
         // do not notify for the initial files
@@ -40,7 +41,7 @@ const
     },
 
     // reset to default slot when encoding for current slot is done
-    slotResetCallback = async(slots:Array<StreamingSlot>, defaultSlot:StreamingSlot, slotIndexToReset:number):Promise<void> => {
+    slotResetCallback = async(slots: Array<StreamingSlot>, defaultSlot: StreamingSlot, slotIndexToReset: number): Promise<void> => {
         // replace file
         await copyFile(defaultSlot.filename, slots[slotIndexToReset].filename);
         // mark the slot as available again
@@ -48,30 +49,33 @@ const
     },
 
     // subprocess exit callback
-    onSpawnedProcessExit = (fileWatcher:chokidar.FSWatcher, code:number | null, signal:NodeJS.Signals | null):void => {
+    onSpawnedProcessExit = (fileWatcher: chokidar.FSWatcher, code: number | null, signal: NodeJS.Signals | null): void => {
         // log ffmpeg exit condition
-        console.log(code ? `ffmpeg exited with code ${ code }` : signal ? `ffmpeg exited after receiving ${ signal }` : `something went really wrong monkaS`);
+        console.log(code ? `ffmpeg exited with code ${ String(code) }` : signal ? `ffmpeg exited after receiving ${ signal }` : `something went really wrong monkaS`);
         // use an immediate to enqueue reset callback
-        setImmediate(async() => {
+        setImmediate((): void => {
             // stop chokidar
-            console.log(`stopping file watcher ...`);
-            await fileWatcher.close();
+            void (async() => {
+                console.log(`stopping file watcher ...`);
+                await fileWatcher.close();
+            })();
         });
+
         // gracefully exit process at this stage ...
     },
 
     // parameter are mutated on purpose here ...
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onSpawnedProcessMessage = (slots:Array<StreamingSlot>, defaultSlot:StreamingSlot, d:any):void => {
+    onSpawnedProcessMessage = (slots: Array<StreamingSlot>, defaultSlot: StreamingSlot, d: Buffer | string): void => {
         const
             // decode
-            msg:string = d.toString(`utf8`),
+            msg: string = d.toString(`utf8`),
             // search pattern
-            pos:number = msg.indexOf(`time=`),
+            pos: number = msg.indexOf(`time=`),
             // isolate time
-            t:string | null = pos >= 0 ? msg.substring(pos + 5, msg.indexOf(` `, pos + 5)) : null;
+            t: string | null = pos >= 0 ? msg.substring(pos + 5, msg.indexOf(` `, pos + 5)) : null;
 
-        // discard irrelevant messages
+        // discard irrelevant messages (explicit comparison bc boolean vs undefined situation ...)
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
         if (t === null || ProgramState.instance.processStdErrMsgs === false)
             return;
 
@@ -89,7 +93,7 @@ const
 
         // process stops when it happens iirc
         if (justTranscoded < 0)
-            throw new RangeError(`last transcoded time less than zero ${ String(justTranscoded) } ms ...\nmessage: ${ msg }\nffmpeg timer: ${ String(ffmpegTimer) }\nlocal timer: ${ ProgramState.instance.transcodedTime }`);
+            throw new RangeError(`last transcoded time less than zero ${ String(justTranscoded) } ms ...\nmessage: ${ msg }\nffmpeg timer: ${ String(ffmpegTimer) }\nlocal timer: ${ String(ProgramState.instance.transcodedTime) }`);
 
         const
             // identify the slot being transcoded
@@ -117,7 +121,15 @@ const
 
             // set the timeout for resetting the file - concat demuxer clock can lag up to
             // 1 second behind mpegts muxer clock, which can cause premature replacing of files
-            setTimeout(slotResetCallback.bind(null, slots, defaultSlot, index), SLOTS_RESET_TIMEOUT);
+            setTimeout((): void => {
+                slotResetCallback(slots, defaultSlot, index)
+                    .catch((err: unknown) => {
+                        // log to stderr
+                        console.error(err instanceof Error ? err.message : `unknown error`);
+                        // exit with error
+                        process.exit(1);
+                    });
+            }, SLOTS_RESET_TIMEOUT);
 
             // recompute slots timestamps
             computeTimestamps(slots);
@@ -132,18 +144,18 @@ const
         }
 
         // format log
-        const table = new AsciiTable(`live streaming (${ ProgramState.instance.elapsedTime / 1e3 }/${ ProgramState.instance.totalLoopTime / 1e3 } s)`, {})
+        const table = new AsciiTable(`live streaming (${ String(ProgramState.instance.elapsedTime / 1e3) }/${ String(ProgramState.instance.totalLoopTime / 1e3) } s)`, {})
             .setHeading(`slot`, `start time`, `program`, `duration`, `current`)
             // populate
             .addRowMatrix(slots.map(x => [
                 // index
                 x.index + 1,
                 // timestamp
-                `${ Math.floor(x.timestamp / 1e3) } s`,
+                `${ String(Math.floor(x.timestamp / 1e3)) } s`,
                 // status
                 (x.pendingReset ? `<pending reset ...>` : x.isDefault ? `<available>` : x.source).split(`/`).pop(),
                 // duration
-                `${ Math.floor(Math.round(x.duration / 1e3) / 60) } mn ${ Math.round(x.duration / 1e3) % 60 } s`,
+                `${ String(Math.floor(Math.round(x.duration / 1e3) / 60)) } mn ${ String(Math.round(x.duration / 1e3) % 60) } s`,
                 // play indicator
                 x.index === ProgramState.instance.currentSlot.index ? `<--` : ``
             ]));
@@ -156,7 +168,7 @@ const
     },
 
     // add file to the transcoding queue on copy ...
-    onFileAddedToStreamQueue = async(slots:Array<StreamingSlot>, defaultSlot:StreamingSlot, path:string):Promise<void> => {
+    onFileAddedToStreamQueue = async(slots: Array<StreamingSlot>, defaultSlot: StreamingSlot, path: string): Promise<void> => {
         // check file format
         if (path.endsWith(SLOTS_EXTENSION)) {
 
@@ -167,10 +179,10 @@ const
             let availableSlot = null;
 
             // seek next available slot from currently transcoding index (exclude slots pending for reset)
-            availableSlot = slots.slice(ProgramState.instance.currentSlot.index + 1).find(x => x.isDefault === true && typeof x.pendingReset === `undefined`);
+            availableSlot = slots.slice(ProgramState.instance.currentSlot.index + 1).find(x => x.isDefault && typeof x.pendingReset === `undefined`);
 
             // if none is available, resume seeking from the start of the array (exclude slots pending for reset)
-            availableSlot = typeof availableSlot === `undefined` ? slots.find(x => x.isDefault === true && typeof x.pendingReset === `undefined`) : availableSlot;
+            availableSlot = typeof availableSlot === `undefined` ? slots.find(x => x.isDefault && typeof x.pendingReset === `undefined`) : availableSlot;
 
             // no slots available Sadge
             if (typeof availableSlot === `undefined`) {
@@ -216,7 +228,7 @@ const
     },
 
     // start processing transcoding queue
-    stream = async():Promise<ChildProcess> => {
+    stream = async(): Promise<ChildProcess> => {
 
         try {
 
@@ -228,7 +240,7 @@ const
             console.log(`initializing streaming slots ...`);
 
             // eslint-disable-next-line newline-per-chained-call
-            await Promise.all(new Array(SLOTS_LIST_LENGTH).fill(null).map((_, i) => copyFile(SLOTS_DEFAULT, `${ SLOTS_DIRECTORY }/${ SLOTS_PREFIX }${ i }${ SLOTS_EXTENSION }`)) as Array<Promise<void>>);
+            await Promise.all(new Array(SLOTS_LIST_LENGTH).fill(null).map((_, i) => copyFile(SLOTS_DEFAULT, `${ SLOTS_DIRECTORY }/${ SLOTS_PREFIX }${ String(i) }${ SLOTS_EXTENSION }`)));
 
             console.log(`streaming slots initialization complete.`);
 
@@ -264,14 +276,14 @@ const
                 // ---- monitor stream queue for new video sources ---
                 // ---------------------------------------------------
 
-                watchr:chokidar.FSWatcher = chokidar.watch(QUEUE_DIRECTORY, FSWATCHER_OPTIONS),
+                watchr: chokidar.FSWatcher = chokidar.watch(QUEUE_DIRECTORY, FSWATCHER_OPTIONS),
 
                 // ---------------------------------------------------
                 // --------------- SPAWN FFMPEG PROCESS --------------
                 // ------- initialize first mile srt live stream -----
                 // ---------------------------------------------------
 
-                streamGenerator:ChildProcess = spawn(STREAM_START_COMMAND, [ SLOTS_DIRECTORY, SLOTS_LIST_NAME, TWITCH_ENDPOINT ], {
+                streamGenerator: ChildProcess = spawn(STREAM_START_COMMAND, [ SLOTS_DIRECTORY, SLOTS_LIST_NAME, TWITCH_ENDPOINT ], {
                     // default subprocess env
                     env: process.env,
                     // pipe stderr to spawned subprocess
@@ -281,7 +293,7 @@ const
                 });
 
             // typescript (stdout ignored)
-            if (streamGenerator === null || streamGenerator.stderr === null)
+            if (typeof streamGenerator === `undefined` || !streamGenerator.stderr)
                 throw new Error(`failed to spawn ffmpeg process.`);
 
             // ---------------------------------------------------
@@ -302,12 +314,20 @@ const
             // ---------------------------------------------------
 
             // add event listeners
-            watchr.on(`add`, onFileAddedToStreamQueue.bind(null, slots, defaultSlot));
+            watchr.on(`add`, (path: string): void => {
+                onFileAddedToStreamQueue(slots, defaultSlot, path)
+                    .catch((err: unknown) => {
+                        // log to stderr
+                        console.error(err instanceof Error ? err.message : `unknown error`);
+                        // exit with error
+                        process.exit(1);
+                    });
+            });
 
             // return
             return streamGenerator;
 
-        } catch (err:unknown) {
+        } catch (err: unknown) {
             // pass rejected promise to calling function
             throw new Error(err instanceof Error ? err.message : `unknown error`);
         }

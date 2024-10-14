@@ -12,7 +12,7 @@ const
     baseDir = process.cwd(),
 
     // init config and options
-    config:DefaultConfig = {
+    config: DefaultConfig = {
         // stream queue
         QUEUE_DIRECTORY: `${ baseDir }/${ process.env.NODE_ENV === `production` ? `` : `..` }/stream.queue`,
         QUEUE_FILE_STABILITY_THRESHOLD: 2.5e3,
