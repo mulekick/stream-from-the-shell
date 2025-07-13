@@ -1,6 +1,15 @@
-// import interfaces
-import {StreamingSlot, StateSignature} from "../../interfaces.ts";
+/**
+ * helpers for program state management.
+ * @module
+ */
 
+// import types
+import type {StreamingSlot, StateSignature} from "../interfaces.ts";
+
+/**
+ * @class
+ * singleton pattern implementation for program state management
+ */
 class ProgramState {
     // private static singleton instance placeholder
     private static singleton: ProgramState;

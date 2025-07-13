@@ -1,5 +1,7 @@
 # exclude node modules
 node_modules
+# exclude auto-generated docs
+docs
 # exclude build
 dist/*
 # push directories

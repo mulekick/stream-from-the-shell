@@ -20,7 +20,7 @@
             // run using tsx
             "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/tsx",
             // not using nodemon in debug mode
-            "program": "${workspaceFolder}/src/stream-from-the-shell/main.ts",
+            "program": "${workspaceFolder}/src/main.ts",
             "args": [ "--stream" ],
             "cwd": "${workspaceFolder}"
         }

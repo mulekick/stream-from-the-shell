@@ -1,0 +1,35 @@
+{
+    "name": "stream-from-the-shell",
+    "readme": "none",
+    "entryPoints": ["./src"],
+    "entryPointStrategy": "expand",
+    "alwaysCreateEntryPointModule": true,
+    "cleanOutputDir": true,
+    "exclude": ["**/*.test.ts"],
+    "excludeNotDocumented": false,
+    // important ...
+    "excludeExternals": true,
+    "jsDocCompatibility": false,
+    "basePath": "./",
+    "outputs": [{
+        "name": "markdown",
+        "path": "./docs"
+    }],
+    "plugin": ["typedoc-plugin-markdown"],
+    // plugin specific
+    "outputFileStrategy": "modules",
+    "expandObjects": true,
+    "useCodeBlocks": true,
+    "indexFormat": "table",
+    "parametersFormat": "table",
+    "interfacePropertiesFormat": "table",
+    "classPropertiesFormat": "table",
+    "enumMembersFormat": "table",
+    "propertyMembersFormat": "table",
+    "typeDeclarationFormat": "table",
+    "sort": [
+        "source-order"
+    ],
+    // skip type checking
+    "skipErrorChecking": true
+}

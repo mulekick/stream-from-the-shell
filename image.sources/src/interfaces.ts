@@ -1,6 +1,15 @@
-// ===== config interfaces =====
+/**
+ * Project types definitions.
+ * @module
+ * @remarks
+ * - no parsing since this project does not rely on user input.
+ * - as a result, types are static and not extrapolated from parsers.
+ */
 
-// main config
+/**
+ * main config signature
+ * @useDeclaredType
+ */
 export interface DefaultConfig {
     // stream queue
     QUEUE_DIRECTORY: string;
@@ -20,16 +29,30 @@ export interface DefaultConfig {
     RESTREAM_START_COMMAND: string;
     // ingestion endpoint
     TWITCH_ENDPOINT: string;
+    // process exit signal
+    EXIT_SIGNAL: `SIGTERM` | `SIGINT`;
 }
 
+/**
+ * media file probes types
+ * @useDeclaredType
+ */
 export type ProbeType = `default_slot` | `streaming_slots` | `incoming_video`;
 
+/**
+ * media file probe signature
+ * @useDeclaredType
+ */
 export interface ProbeResult {
     format: {
         filename: string;
     } & Record<string, unknown>;
 }
 
+/**
+ * streaming slot signature
+ * @useDeclaredType
+ */
 export interface StreamingSlot {
     filename: string;
     size: number;
@@ -41,7 +64,10 @@ export interface StreamingSlot {
     pendingReset?: boolean;
 }
 
-// program state signature
+/**
+ * program state signature
+ * @useDeclaredType
+ */
 export interface StateSignature {
     // slot currently being transcoded
     currentSlot: StreamingSlot;

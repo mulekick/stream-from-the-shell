@@ -1,14 +1,32 @@
+/**
+ * Main process file.
+ * @module
+ * @remarks
+ * - command `--stream` will loop over available streaming slots.
+ * - command `--restream` will rebroadcast an existing HLS playlist.
+ * - process and subprocess will exit once a given signal is received.
+ */
+
 // import primitives
 import process from "node:process";
 import console from "node:console";
-import {ChildProcess} from "node:child_process";
-import internal from "node:stream";
 import {once} from "node:events";
 
 // import modules
+import config from "./config.ts";
 import stream from "./stream.ts";
 import restream from "./restream.ts";
 
+// import types
+import type internal from "node:stream";
+import type {ChildProcess} from "node:child_process";
+
+// destructure config values
+const {EXIT_SIGNAL} = config;
+
+/**
+ * main function
+ */
 void (async() => {
 
     try {
@@ -54,9 +72,9 @@ void (async() => {
         // ---- send termination signal to ffmpeg and exit ---
         // ---------------------------------------------------
 
-        await once(process, `SIGINT`);
+        await once(process, EXIT_SIGNAL);
 
-        console.debug(`process received SIGINT, stopping stream ...`);
+        console.debug(`process received ${ EXIT_SIGNAL }, stopping stream ...`);
 
         // stop processing ffmpeg output ...
         (spawnedProcess.stderr as internal.Readable).removeAllListeners(`data`);

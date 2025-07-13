@@ -12,7 +12,7 @@ dockerimg="$registry/$appname:latest"
 contname="$(cat .container.name)"
 # container bind mount for stream queue
 hostqueuedir=$(realpath stream.queue)
-contqueuedir='/src/stream.queue'
+contqueuedir='/dist/stream.queue'
 
 # -------------------------------------
 # double check directory
@@ -49,11 +49,11 @@ elif [[ $1 = 'stream' ]]; then
     echo "starting container ..."
 
     # disposable, allocate tty to get colors support in terminal, detach
-    # acknowledge SIGINT as main process exit signal
+    # acknowledge SIGTERM as main process exit signal
     # mount stream queueing directory from host into container
     docker container run \
         --rm -t -d \
-        --stop-signal=SIGINT \
+        --stop-signal=SIGTERM \
         --mount "type=bind,source=$hostqueuedir,target=$contqueuedir,ro=false" \
         --env TWITCH_ENDPOINT="$(cat .twitch.endpoint)" \
         --network host \
@@ -68,17 +68,16 @@ elif [[ $1 = 'restream' ]]; then
     echo "starting container ..."
 
     # disposable, allocate tty to get colors support in terminal, detach
-    # acknowledge SIGINT as main process exit signal
+    # acknowledge SIGTERM as main process exit signal
     # mount stream queueing directory from host into container
     docker container run \
         --rm -t -d \
-        --stop-signal=SIGINT \
+        --stop-signal=SIGTERM \
         --env TWITCH_ENDPOINT="$(cat .twitch.endpoint)" \
         --network host \
         --name "$contname" \
         "$dockerimg" \
         --restream "$2"
-
 # -------------------------------------
 # stop container
 elif [[ $1 = 'stop' ]]; then
@@ -88,7 +87,7 @@ elif [[ $1 = 'stop' ]]; then
     echo "---------------------------"
     echo "stopping container ..."
     docker container stop \
-        --signal=SIGINT \
+        --signal=SIGTERM \
         -t 10 \
         "$contname"
 
